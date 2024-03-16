@@ -1,3 +1,4 @@
+//SPDX-License-Identifier:MIT
 pragma solidity ^0.8.0;
 
 // Importa lo smart contract per lo staking
@@ -14,44 +15,41 @@ contract StakingFactory {
     // Indirizzo del proprietario del contratto
     address public owner;
 
-    // Mapping che memorizza gli indirizzi dei contratti di staking creati
-    address[] public stakingContracts;
+    uint256 stakingTime;
 
-    IERC20[2] public stakedContract;
-
+    address[] deployedContract;
     // Evento emesso quando viene creato un nuovo contratto di staking
-    event StakingContractCreated(address indexed token, address stakingContract);
+    event StakingContractCreated(IERC20[2] indexed tokens, address stakingContract);
 
     /**
      * @dev Costruttore del contratto
      */
-    constructor() {
+    constructor(uint256 _stakingTime) {
         owner = msg.sender;
+        stakingTime=_stakingTime;
     }
 
     /**
      * @notice Funzione per creare un nuovo contratto di staking
      * @param homeTeamFanToken Indirizzo del token ERC-20 del football club che gioca in casa da mettere in stake
      * @param guestTeamFanToken Indirizzo del token ERC-20 del football club che gioca fuori casa da mettere in stake
-     * @param _stakingDuration Durata dello staking in secondi
+     * @param _stakingTime Durata dello staking in secondi
      * @return _stakingContract Indirizzo del nuovo contratto di staking
      */
     function createStakingContract(
         address homeTeamFanToken,
         address guestTeamFanToken,
-        uint256 _stakingDuration
+        uint256 _stakingTime
     ) external onlyOwner returns (address _stakingContract) {
-        IERC20[2] tokenToStake=[homeTeamFanToken,guestTeamFanToken];
+         IERC20[2] memory tokenToStake=[IERC20(homeTeamFanToken),IERC20(guestTeamFanToken)];
         // Crea un nuovo contratto di staking
-        ChatStaking stakingContract = new ChatStaking(tokenToStake, _stakingDuration);
+        ChatStaking stakingContract = new ChatStaking(tokenToStake, _stakingTime);
 
         // Memorizza l'indirizzo del nuovo contratto di staking
-        stakingContracts.push(address(stakingContract));
-        stakedContract[0]=homeTeamFanToken;
-        stakedContract[1]=guestTeamFanToken;
+        deployedContract.push(address(stakingContract));
 
         // Emetti un evento per notificare la creazione del nuovo contratto
-        emit StakingContractCreated(address(_token), address(stakingContract));
+        emit StakingContractCreated(tokenToStake,address(stakingContract));
 
         return address(stakingContract);
     }
