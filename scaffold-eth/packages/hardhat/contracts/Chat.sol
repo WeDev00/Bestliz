@@ -61,7 +61,7 @@ contract ChatStaking {
 
 
     
-    function getName() public returns (string memory){
+    function getName() public view returns (string memory){
         return name;
     }
 
