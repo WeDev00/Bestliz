@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  */
 contract ChatStaking {
 
+    string name;
+
     // ERC-20 token addresses to be staked
     IERC20[] public tokens;
 
@@ -37,11 +39,13 @@ contract ChatStaking {
      * @param _stakingDuration Staking duration in seconds
      */
     constructor(
+        string memory _name,
          IERC20[2]  memory _tokens,
         uint256 _stakingDuration
     ) {
         tokens = _tokens;
         stakingDuration = _stakingDuration;
+        name=_name;
     }
 
     /**
@@ -53,14 +57,14 @@ contract ChatStaking {
         require(_amount >= amountToStake, "Errore: importo non valido");
         
         
-        // Trasferisci i token dal wallet dell'utente al contratto
+        // Transfer the tokens from the user's wallet to the contract
         if(isHomeTeamToken)
         tokens[0].transferFrom(msg.sender, address(this), _amount);
         else {
             tokens[1].transferFrom(msg.sender,address(this),_amount);
         }
 
-        // Aggiorna lo stato di staking dell'utente
+        // Updates the user's staking status
         staked[msg.sender] += _amount;
         startTime[msg.sender] = block.timestamp;
 
@@ -77,7 +81,7 @@ contract ChatStaking {
     }
 
     /**
-     * @notice Funzione per ritirare i token
+     * @notice Function for withdrawing tokens
      * @param isHomeTeamToken Boolean indicating whether the tokens to be staked are of home team or guest team
      */
     function unstake(bool isHomeTeamToken) external {
@@ -90,7 +94,7 @@ contract ChatStaking {
             tokens[1].transfer(msg.sender, staked[msg.sender] );
         }
 
-        // Aggiorna lo stato di staking dell'utente
+        // Updates the user's staking status
         staked[msg.sender] = 0;
         startTime[msg.sender] = 0;
 
