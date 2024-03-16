@@ -1,9 +1,8 @@
 //SPDX-License-Identifier:MIT
 pragma solidity ^0.8.0;
 
-// Importa lo standard ERC-20
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-//import "std/Std.sol";
+
 /**
  * @title Smart contract for staking ERC-20 tokens
  * @author WeDev00
@@ -33,6 +32,9 @@ contract ChatStaking {
     // Mapping that stores the amount in staking for each user
     mapping(address => StakedTokens) public staked;
 
+    // Mapping that stores if a user exist in our staked mapping
+    mapping(address=>bool) public haveStaked;
+
     // Mapping that stores the staking start timestamp for each user
     mapping(address => uint256) public startTime;
 
@@ -41,6 +43,7 @@ contract ChatStaking {
 
     // Event issued when a user withdraws tokens
     event Unstaked(address indexed user, uint256 amount);
+
 
     /**
      * @dev Contract's constructor
@@ -69,22 +72,42 @@ contract ChatStaking {
         name=_name;
     }
 
-    // ERC-20 token addresses to be staked
-   /* IERC20[] public tokens;
+    function getTokens() public view returns (IERC20[] memory){
+        return tokens;
+    }
 
-    function getTokens() public returns (memory IERC20[]){}
+    function setTokens(IERC20[] memory _tokens) public onlyOwner{
+        tokens=_tokens;
+    }
 
-    uint256 public amountToStake;
+    function setHomeToken(address _homeTeamAddress) public onlyOwner{
+        tokens[0]=IERC20(_homeTeamAddress);
+    }
 
-    // Staking duration in seconds
-    uint256 public stakingDuration;
+    function setGuestToken(address _guestTeamAddress) public onlyOwner{
+        tokens[1]=IERC20(_guestTeamAddress);
+    }
 
-    // Mapping that stores the amount in staking for each user
-    mapping(address => StakedTokens) public staked;
+    function getAmountToStake() public view returns(uint256){
+        return amountToStake;
+    }
 
-    // Mapping that stores the staking start timestamp for each user
-    mapping(address => uint256) public startTime;
-*/
+    function modifyAmountToStake(uint256 newAmount) public onlyOwner{
+        amountToStake=newAmount;
+    }
+
+    function getStakingDuration() public view returns(uint256){
+        return stakingDuration;
+    }
+
+    function modifyStakingDuration(uint256 newDuration) public onlyOwner{
+        stakingDuration=newDuration;
+    }
+
+
+    function getAmountOfTokensStakedByAddress(address user) public view returns(StakedTokens memory){
+        return staked[user];
+    }
 
 
     /**
@@ -108,6 +131,7 @@ contract ChatStaking {
 
         // Updates the user's staking status
         staked[msg.sender].amount += _amount;
+        haveStaked[msg.sender]=true;
         startTime[msg.sender] = block.timestamp;
 
         emit Staked(msg.sender, _amount);
@@ -119,7 +143,7 @@ contract ChatStaking {
      * @return boolean indicating whether the user has staked the correct amount of tokens
      */
     function isAllowed() public view returns(bool){
-        require(staked[msg.sender].amount!=0,"Error:sender never staked some tokens");
+        require(haveStaked[msg.sender],"Error:sender never staked some tokens");
         return staked[msg.sender].amount >= amountToStake;
     }
 
@@ -129,7 +153,7 @@ contract ChatStaking {
      */
     function unstake() external {
         require(block.timestamp >= startTime[msg.sender] + stakingDuration, "Errore: periodo di staking non ancora terminato");
-
+        require(haveStaked[msg.sender],"Error:sender never staked some tokens");
         // Unstake your tokens
         if(IERC20(staked[msg.sender].tokenAddress)==tokens[0])
         tokens[0].transfer(msg.sender, staked[msg.sender].amount );
