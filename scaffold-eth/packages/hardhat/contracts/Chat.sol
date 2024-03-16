@@ -143,7 +143,6 @@ contract ChatStaking {
      * @return boolean indicating whether the user has staked the correct amount of tokens
      */
     function isAllowed() public view returns(bool){
-        require(haveStaked[msg.sender],"Error:sender never staked some tokens");
         return staked[msg.sender].amount >= amountToStake;
     }
 

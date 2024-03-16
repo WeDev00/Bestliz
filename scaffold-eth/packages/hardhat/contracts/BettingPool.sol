@@ -41,6 +41,26 @@ contract BettingPool{
         lendingPlatformAddress=_lendingPlatformAddress;
     }
 
+
+    function getChatAddress()public view returns(address){
+        return chatAddress;
+    }
+ 
+    function getNumberOfPlacedBet() public view returns(uint256){
+        return betIds;
+    }
+
+    function getDescriptions() public view returns (string[] memory){
+        string[] memory descriptionsToReturn=new string[](betIds);
+        for(uint256 i=1;i<=betIds;i++)
+        descriptionsToReturn[i-1]=descriptions[i];
+        return descriptionsToReturn;
+    }
+
+    function getDescriptionByBetId(uint256 betId) public view returns(string memory ){
+        return descriptions[betId];
+    }
+
     function placeABet(string memory description) payable public {
         betIds+=1;
         descriptions[betIds]=description;
