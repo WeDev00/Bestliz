@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 // Importa lo standard ERC-20
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
+//import "std/Std.sol";
 /**
  * @title Smart contract for staking ERC-20 tokens
  * @author WeDev00
@@ -17,15 +17,15 @@ contract ChatStaking {
     }
 
     //owner of this contract
-    address owner;
+    address private owner;
 
     //name of the event
-    string name;
+    string public name;
 
     // ERC-20 token addresses to be staked
     IERC20[] public tokens;
 
-    uint256 amountToStake;
+    uint256 public amountToStake;
 
     // Staking duration in seconds
     uint256 public stakingDuration;
@@ -59,6 +59,34 @@ contract ChatStaking {
         name=_name;
     }
 
+
+    
+    function getName() public returns (string memory){
+        return name;
+    }
+
+    function setName(string memory _name) public onlyOwner {
+        name=_name;
+    }
+
+    // ERC-20 token addresses to be staked
+   /* IERC20[] public tokens;
+
+    function getTokens() public returns (memory IERC20[]){}
+
+    uint256 public amountToStake;
+
+    // Staking duration in seconds
+    uint256 public stakingDuration;
+
+    // Mapping that stores the amount in staking for each user
+    mapping(address => StakedTokens) public staked;
+
+    // Mapping that stores the staking start timestamp for each user
+    mapping(address => uint256) public startTime;
+*/
+
+
     /**
      * @notice Function for staking tokens
      * @param _amount Amount of tokens to be staked
@@ -91,8 +119,13 @@ contract ChatStaking {
      * @return boolean indicating whether the user has staked the correct amount of tokens
      */
     function isAllowed() public view returns(bool){
+        require(staked[msg.sender].amount!=0,"Error:sender never staked some tokens");
         return staked[msg.sender].amount >= amountToStake;
     }
+
+    function isAddressPresent(address _addr) internal view returns (bool) {
+    return _addr in staked;
+  }
 
     /**
      * @notice Function for withdrawing tokens
