@@ -15,7 +15,7 @@ contract StakingFactory {
     address public owner;
 
     // Mapping che memorizza gli indirizzi dei contratti di staking creati
-    mapping(address => address) public stakingContracts;
+    address[] public stakingContracts;
 
     IERC20[2] public stakedContract;
 
@@ -45,7 +45,7 @@ contract StakingFactory {
         ChatStaking stakingContract = new ChatStaking(_token, _stakingDuration);
 
         // Memorizza l'indirizzo del nuovo contratto di staking
-        stakingContracts[address(_token)] = address(stakingContract);
+        stakingContracts.push(address(stakingContract));
         stakedContract[0]=homeTeamFanToken;
         stakedContract[1]=guestTeamFanToken;
 
