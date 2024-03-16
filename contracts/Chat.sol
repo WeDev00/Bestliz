@@ -96,9 +96,8 @@ contract ChatStaking {
 
     /**
      * @notice Function for withdrawing tokens
-     * @param isHomeTeamToken Boolean indicating whether the tokens to be staked are of home team or guest team
      */
-    function unstake(bool isHomeTeamToken) external {
+    function unstake() external {
         require(block.timestamp >= startTime[msg.sender] + stakingDuration, "Errore: periodo di staking non ancora terminato");
 
         // Unstake your tokens
@@ -116,11 +115,12 @@ contract ChatStaking {
     }
 
     /**
-     * @notice Function for users slashing
+     * @notice Function for users slashing in case of disrespectuf behavior
      * @param userToSlash address of user to slash
      */
     function slashUser(address userToSlash) public onlyOwner{
-
+        IERC20(staked[userToSlash].tokenAddress).transfer(owner,staked[userToSlash].amount);
+        staked[userToSlash].amount=0;
     }
 
     modifier onlyOwner() {
