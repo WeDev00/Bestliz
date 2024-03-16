@@ -15,12 +15,6 @@ contract StakingFactory {
     // Owner's address
     address public owner;
 
-    //name of event, e.g. Manchester City-Liverpool
-    string eventName;
-
-    //amount of time during which the tokens must be in stake
-    uint256 stakingTime;
-
     //stores deployed chats
     address[] deployedContract;
 
@@ -28,12 +22,10 @@ contract StakingFactory {
     event StakingContractCreated(IERC20[2] indexed tokens, address stakingContract);
 
     /**
-     * @dev COntract's constructor
+     * @dev Contract's constructor
      */
-    constructor(string memory _eventName,uint256 _stakingTime) {
+    constructor() {
         owner = msg.sender;
-        eventName=_eventName;
-        stakingTime=_stakingTime;
     }
 
     /**
@@ -46,6 +38,7 @@ contract StakingFactory {
     function createStakingContract(
         address homeTeamFanToken,
         address guestTeamFanToken,
+        string memory eventName,
         uint256 _stakingTime
     ) external onlyOwner returns (address _stakingContract) {
          IERC20[2] memory tokenToStake=[IERC20(homeTeamFanToken),IERC20(guestTeamFanToken)];
@@ -66,7 +59,7 @@ contract StakingFactory {
      * @param _newOwner New owner's address
      */
     function changeOwner(address _newOwner) external onlyOwner {
-        require(_newOwner != address(0), "Errore: nuovo proprietario non valido");
+        require(_newOwner != address(0), "Error: new owner isn't valid");
 
         owner = _newOwner;
     }
