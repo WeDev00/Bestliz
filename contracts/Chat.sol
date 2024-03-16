@@ -10,6 +10,11 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @notice This contract allows users to stake existing ERC-20 tokens
  */
 contract ChatStaking {
+    
+    struct StakedTokens{
+        uint256 amount;
+        address tokenAddress;
+    }
 
     //owner of this contract
     address owner;
@@ -26,7 +31,7 @@ contract ChatStaking {
     uint256 public stakingDuration;
 
     // Mapping that stores the amount in staking for each user
-    mapping(address => uint256) public staked;
+    mapping(address => StakedTokens) public staked;
 
     // Mapping that stores the staking start timestamp for each user
     mapping(address => uint256) public startTime;
@@ -64,14 +69,17 @@ contract ChatStaking {
         
         
         // Transfer the tokens from the user's wallet to the contract
-        if(isHomeTeamToken)
+        if(isHomeTeamToken){
         tokens[0].transferFrom(msg.sender, address(this), _amount);
+        staked[msg.sender].tokenAddress=address(tokens[0]);
+        }
         else {
             tokens[1].transferFrom(msg.sender,address(this),_amount);
+            staked[msg.sender].tokenAddress=address(tokens[1]);
         }
 
         // Updates the user's staking status
-        staked[msg.sender] += _amount;
+        staked[msg.sender].amount += _amount;
         startTime[msg.sender] = block.timestamp;
 
         emit Staked(msg.sender, _amount);
@@ -83,7 +91,7 @@ contract ChatStaking {
      * @return boolean indicating whether the user has staked the correct amount of tokens
      */
     function isAllowed() public view returns(bool){
-        return staked[msg.sender] >= amountToStake;
+        return staked[msg.sender].amount >= amountToStake;
     }
 
     /**
@@ -94,17 +102,17 @@ contract ChatStaking {
         require(block.timestamp >= startTime[msg.sender] + stakingDuration, "Errore: periodo di staking non ancora terminato");
 
         // Unstake your tokens
-        if(isHomeTeamToken)
-        tokens[0].transfer(msg.sender, staked[msg.sender] );
+        if(IERC20(staked[msg.sender].tokenAddress)==tokens[0])
+        tokens[0].transfer(msg.sender, staked[msg.sender].amount );
         else{
-            tokens[1].transfer(msg.sender, staked[msg.sender] );
+            tokens[1].transfer(msg.sender, staked[msg.sender].amount );
         }
 
         // Updates the user's staking status
-        staked[msg.sender] = 0;
+        staked[msg.sender].amount = 0;
         startTime[msg.sender] = 0;
 
-        emit Unstaked(msg.sender, staked[msg.sender]);
+        emit Unstaked(msg.sender, staked[msg.sender].amount);
     }
 
     /**
@@ -112,7 +120,7 @@ contract ChatStaking {
      * @param userToSlash address of user to slash
      */
     function slashUser(address userToSlash) public onlyOwner{
-        
+
     }
 
     modifier onlyOwner() {
