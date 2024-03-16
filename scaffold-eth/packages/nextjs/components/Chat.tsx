@@ -30,7 +30,7 @@ const Chat = () => {
         </CardHeader>
         <Divider />
         <CardBody>
-          <div className="min-h-[500px] max-h-[900px] overflow-y-scroll">
+          <div className="min-h-[500px] max-h-[700px] overflow-y-scroll">
             {messages.map(message => (
               <div key={message.id} className={`chat chat-${message.sender === "me" ? "end" : "start"}`}>
                 <div className="chat-image avatar">

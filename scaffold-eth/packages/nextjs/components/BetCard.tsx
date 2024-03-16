@@ -1,73 +1,107 @@
 import { useState } from "react";
-import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Input } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Divider,
+  Input,
+  Progress,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/react";
 
-const Chat = () => {
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello, how can I help you?", sender: "other", time: "12:00 pm" },
-    { id: 2, text: "I have a question about my order.", sender: "me", time: "12:05 pm" },
-    // Add more messages here
-  ]);
-  const [newMessage, setNewMessage] = useState("");
-
-  const handleSendMessage = () => {
-    if (newMessage.trim() !== "") {
-      const nextMessage = {
-        id: messages.length + 1,
-        text: newMessage,
-        sender: "me",
-        time: Date().now.toString(),
-      };
-      setMessages([...messages, nextMessage]);
-      setNewMessage("");
-    }
-  };
-
+const BetCard = () => {
   return (
     <>
       <Card>
-        <CardHeader className="flex gap-3">
-          <h2 className="text-md">Chat Room</h2>
+        <CardHeader className="flex text-center">
+          <h2 className="text-md py-2">Match Winner</h2>
         </CardHeader>
         <Divider />
-        <CardBody>
-          <div className="min-h-[500px] max-h-[900px] overflow-y-scroll">
-            {messages.map(message => (
-              <div key={message.id} className={`chat chat-${message.sender === "me" ? "end" : "start"}`}>
-                <div className="chat-image avatar">
-                  <div className="w-10 rounded-full">
-                    <img
-                      alt="Tailwind CSS chat bubble component"
-                      src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                    />
-                  </div>
-                </div>
-                <div className="chat-header">
-                  {message.sender}
-                  <time className="ml-2 text-xs opacity-50">{message.time}</time>
-                </div>
-                <div className="chat-bubble">{message.text}</div>
-                <div className="chat-footer opacity-50">Delivered</div>
-              </div>
-            ))}
+        <CardBody className="pb-5">
+          <div className="grid grid-cols-2 gap-x-4 text-small w-full">
+            <div className="space-y-4 my-3 text-center">
+              <Input
+                isClearable
+                variant="bordered"
+                placeholder="Enter bet amount"
+                endContent="CHZ"
+                // value={newMessage}
+                // onChange={e => setNewMessage(e.target.value)}
+                // onKeyPress={e => e.key === "Enter" && handleSendMessage()}
+              />
+              <Button className="w-full">Place Bet</Button>
+            </div>
+            <div className="space-y-4 my-3 text-center">
+              <Input
+                isClearable
+                variant="bordered"
+                placeholder="Enter bet amount"
+                endContent="CHZ"
+                // value={newMessage}
+                // onChange={e => setNewMessage(e.target.value)}
+                // onKeyPress={e => e.key === "Enter" && handleSendMessage()}
+              />
+              <Button className="w-full">Place Bet</Button>
+            </div>
           </div>
+          <Divider className="mb-2" />
+          <h2 className="text-md text-center py-4">Active Bets</h2>
+          <div className="flex justify-between">
+            <p>Manchester City</p>
+            <p>FC Barcelona</p>
+          </div>
+          <Progress aria-label="Current Bets" radius="none" color="success" value={35} className="w-full" />
+          <div className="flex justify-between">
+            <p className="text-warning">500 CHZ</p>
+            <p className="text-warning">500 CHZ</p>
+          </div>
+          <Divider className="mb-2" />
+          <Table removeWrapper hideHeader aria-label="Example static collection table" td="">
+            <TableHeader>
+              <TableColumn align="center">HOME</TableColumn>
+              <TableColumn align="center">CATEGORY</TableColumn>
+              <TableColumn align="center">AWAY</TableColumn>
+            </TableHeader>
+            <TableBody>
+              <TableRow key="1">
+                <TableCell>100%</TableCell>
+                <TableCell>#1 Fan</TableCell>
+                <TableCell>90%</TableCell>
+              </TableRow>
+              <TableRow key="2">
+                <TableCell>80%</TableCell>
+                <TableCell>#2 Fan</TableCell>
+                <TableCell>50%</TableCell>
+              </TableRow>
+              <TableRow key="3">
+                <TableCell>60%</TableCell>
+                <TableCell>#3 Fan</TableCell>
+                <TableCell>30%</TableCell>
+              </TableRow>
+              <TableRow key="4">
+                <TableCell>8%</TableCell>
+                <TableCell>Rest</TableCell>
+                <TableCell>6%</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
         </CardBody>
-        <Divider />
+        {/* <Divider />
         <CardFooter>
           <div className="flex flex-row w-full gap-x-1">
-            <Input
-              isClearable
-              variant="underlined"
-              placeholder="Type a message..."
-              value={newMessage}
-              onChange={e => setNewMessage(e.target.value)}
-              onKeyPress={e => e.key === "Enter" && handleSendMessage()}
-            />
-            <Button onClick={handleSendMessage}>Send</Button>
+           
           </div>
-        </CardFooter>
+        </CardFooter> */}
       </Card>
     </>
   );
 };
 
-export default Chat;
+export default BetCard;
