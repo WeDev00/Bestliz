@@ -70,11 +70,11 @@ contract BettingPool{
     function sendNativeTokens(address _to, uint256 _amount) internal{
   // Sending $CHZ to the specified address
   (bool success, ) = _to.call{value: _amount}("");
-  require(success, "Invio fallito");
+  require(success, "Transaction failed");
   }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Errore: solo il proprietario puo' eseguire questa funzione");
+        require(msg.sender == owner, "Error: only the owner can perform this function");
         _;
     }
 
