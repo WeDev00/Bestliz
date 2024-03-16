@@ -15,7 +15,7 @@ const Chat = () => {
         id: messages.length + 1,
         text: newMessage,
         sender: "me",
-        time: Date.now.toString(),
+        time: Date().now.toString(),
       };
       setMessages([...messages, nextMessage]);
       setNewMessage("");
@@ -30,26 +30,24 @@ const Chat = () => {
         </CardHeader>
         <Divider />
         <CardBody>
-          <div className="min-h-[500px] max-h-[900px] overflow-y-scroll">
+          <div className="min-h-[500px] max-h-[700px] overflow-y-scroll">
             {messages.map(message => (
-              <>
-                <div key={message.id} className={`chat chat-${message.sender === "me" ? "end" : "start"}`}>
-                  <div className="chat-image avatar">
-                    <div className="w-10 rounded-full">
-                      <img
-                        alt="Tailwind CSS chat bubble component"
-                        src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
-                      />
-                    </div>
+              <div key={message.id} className={`chat chat-${message.sender === "me" ? "end" : "start"}`}>
+                <div className="chat-image avatar">
+                  <div className="w-10 rounded-full">
+                    <img
+                      alt="Tailwind CSS chat bubble component"
+                      src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                    />
                   </div>
-                  <div className="chat-header">
-                    {message.sender}
-                    <time className="ml-2 text-xs opacity-50">{message.time}</time>
-                  </div>
-                  <div className="chat-bubble">{message.text}</div>
-                  <div className="chat-footer opacity-50">Delivered</div>
                 </div>
-              </>
+                <div className="chat-header">
+                  {message.sender}
+                  <time className="ml-2 text-xs opacity-50">{message.time}</time>
+                </div>
+                <div className="chat-bubble">{message.text}</div>
+                <div className="chat-footer opacity-50">Delivered</div>
+              </div>
             ))}
           </div>
         </CardBody>
