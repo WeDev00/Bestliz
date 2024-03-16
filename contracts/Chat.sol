@@ -123,9 +123,6 @@ contract ChatStaking {
         return staked[msg.sender].amount >= amountToStake;
     }
 
-    function isAddressPresent(address _addr) internal view returns (bool) {
-    return _addr in staked;
-  }
 
     /**
      * @notice Function for withdrawing tokens
