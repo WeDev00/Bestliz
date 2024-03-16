@@ -1,8 +1,11 @@
 /** @type {import('tailwindcss').Config} */
+
+import { nextui } from "@nextui-org/react";
+
 module.exports = {
-  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./utils/**/*.{js,ts,jsx,tsx}"],
-  plugins: [require("daisyui")],
-  darkTheme: "dark",
+  content: ["./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}", "./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}", "./utils/**/*.{js,ts,jsx,tsx}"],
+  plugins: [require('@tailwindcss/typography'), require("daisyui"), nextui()],
+  darkTheme: "class",
   // DaisyUI theme colors
   daisyui: {
     themes: [
