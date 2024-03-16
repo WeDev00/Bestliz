@@ -15,6 +15,8 @@ contract StakingFactory {
     // Indirizzo del proprietario del contratto
     address public owner;
 
+    string eventName;
+
     uint256 stakingTime;
 
     address[] deployedContract;
@@ -24,8 +26,9 @@ contract StakingFactory {
     /**
      * @dev Costruttore del contratto
      */
-    constructor(uint256 _stakingTime) {
+    constructor(string memory _eventName,uint256 _stakingTime) {
         owner = msg.sender;
+        eventName=_eventName;
         stakingTime=_stakingTime;
     }
 
@@ -43,7 +46,7 @@ contract StakingFactory {
     ) external onlyOwner returns (address _stakingContract) {
          IERC20[2] memory tokenToStake=[IERC20(homeTeamFanToken),IERC20(guestTeamFanToken)];
         // Crea un nuovo contratto di staking
-        ChatStaking stakingContract = new ChatStaking(tokenToStake, _stakingTime);
+        ChatStaking stakingContract = new ChatStaking(eventName,tokenToStake, _stakingTime);
 
         // Memorizza l'indirizzo del nuovo contratto di staking
         deployedContract.push(address(stakingContract));
@@ -64,9 +67,6 @@ contract StakingFactory {
         owner = _newOwner;
     }
 
-    /**
-     * @dev Funzione di modifica per il proprietario del contratto
-     */
     modifier onlyOwner() {
         require(msg.sender == owner, "Errore: solo il proprietario puo' eseguire questa funzione");
         _;

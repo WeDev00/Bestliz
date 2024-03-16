@@ -11,6 +11,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  */
 contract ChatStaking {
 
+    string name;
+
     // ERC-20 token addresses to be staked
     IERC20[] public tokens;
 
@@ -37,11 +39,13 @@ contract ChatStaking {
      * @param _stakingDuration Staking duration in seconds
      */
     constructor(
+        string memory _name,
          IERC20[2]  memory _tokens,
         uint256 _stakingDuration
     ) {
         tokens = _tokens;
         stakingDuration = _stakingDuration;
+        name=_name;
     }
 
     /**
