@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { Button, Card, CardFooter, Image } from "@nextui-org/react";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
-import { Card, CardFooter, Image, Button } from "@nextui-org/react";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -39,8 +39,8 @@ const Home: NextPage = () => {
                 </Link>
               </CardFooter>
             </Card>
-            {[1, 2, 3].map(name => (
-              <Card isFooterBlurred radius="lg" className="border-none">
+            {[1, 2, 3].map(key => (
+              <Card isFooterBlurred radius="lg" className="border-none" key={key}>
                 <Image
                   alt="Match Banner"
                   className="object-cover"
