@@ -11,6 +11,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  */
 contract ChatStaking {
 
+    //owner of this contract
+    address owner;
+
+    //name of the event
     string name;
 
     // ERC-20 token addresses to be staked
@@ -39,10 +43,12 @@ contract ChatStaking {
      * @param _stakingDuration Staking duration in seconds
      */
     constructor(
+        address _owner,
         string memory _name,
          IERC20[2]  memory _tokens,
         uint256 _stakingDuration
     ) {
+        owner=_owner;
         tokens = _tokens;
         stakingDuration = _stakingDuration;
         name=_name;
@@ -100,4 +106,18 @@ contract ChatStaking {
 
         emit Unstaked(msg.sender, staked[msg.sender]);
     }
+
+    /**
+     * @notice Function for users slashing
+     * @param userToSlash address of user to slash
+     */
+    function slashUser(address userToSlash) public onlyOwner{
+        
+    }
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Errore: solo il proprietario puo' eseguire questa funzione");
+        _;
+    }
+
 }

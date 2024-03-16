@@ -50,7 +50,7 @@ contract StakingFactory {
     ) external onlyOwner returns (address _stakingContract) {
          IERC20[2] memory tokenToStake=[IERC20(homeTeamFanToken),IERC20(guestTeamFanToken)];
         // Create a new staking contract
-        ChatStaking stakingContract = new ChatStaking(eventName,tokenToStake, _stakingTime);
+        ChatStaking stakingContract = new ChatStaking(owner,eventName,tokenToStake, _stakingTime);
 
         // Store the address of the new staking contract
         deployedContract.push(address(stakingContract));
