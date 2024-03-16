@@ -28,6 +28,7 @@ const Home: NextPage = () => {
         <h1 className="text-3xl font-bold mb-12">Welcome to the Match Room</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 max-w-7xl mx-auto gap-x-4">
           <Chat></Chat>
+          
         </div>
       </div>
     </>
