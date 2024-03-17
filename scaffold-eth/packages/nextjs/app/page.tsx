@@ -6,9 +6,18 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { useScaffoldContractRead } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+
+  const { data } = useScaffoldContractRead({
+    contractName: "ChatStaking",
+    functionName: "isAllowed",
+    // args: ["0x4F58F6b5f8B3CD0D2a33203D52145F66261F8fC0"],
+  });
+
+  console.log(data);
 
   if (connectedAddress) {
     return (
