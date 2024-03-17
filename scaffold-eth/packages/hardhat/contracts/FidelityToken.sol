@@ -12,10 +12,10 @@ contract FidelityToken is ERC20 {
 	}
 
 	function _transfer(
-		address from,
-		address to,
-		uint256 amount
-	) internal virtual override onlyOwners {
+    address from,
+    address to,
+    uint256 amount
+  ) internal virtual override  onlyOwners {
 		super._transfer(from, to, amount);
 	}
 
