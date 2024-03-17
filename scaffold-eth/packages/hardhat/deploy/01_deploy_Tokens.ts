@@ -8,7 +8,7 @@ import { Contract } from "ethers";
  *
  * @param hre HardhatRuntimeEnvironment object.
  */
-const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
+const deployTokenContracts: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   /*
     On localhost, the deployer account is the one that comes with Hardhat, which is already funded.
 
@@ -22,7 +22,7 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   const { deployer } = await hre.getNamedAccounts();
   const { deploy } = hre.deployments;
 
-  await deploy("StakingFactory", {
+  await deploy("RealManchesterCity", {
     from: deployer,
     // Contract constructor arguments
     args: [],
@@ -33,20 +33,26 @@ const deployYourContract: DeployFunction = async function (hre: HardhatRuntimeEn
   });
 
   // Get the deployed contract to interact with it after deploying.
-  const yourContract = await hre.ethers.getContract<Contract>("StakingFactory", deployer);
-  console.log(
-    "Deployed Chat Contract:",
-    await yourContract.createStakingContract(
-      "0x80ae1d9416bba9857fa5fcbad6a81c78acf2d495",
-      "0xb84340e5e28b1e2756c0151ffbffa79fba5abcf2",
-      "CITY_FCB",
-      6000,
-    ),
-  );
+  const yourMCRContract = await hre.ethers.getContract<Contract>("RealManchesterCity", deployer);
+  console.log("Deployed RealManchesterCity Contract:", await yourMCRContract.getAddress());
+
+  await deploy("RealACMilan", {
+    from: deployer,
+    // Contract constructor arguments
+    args: [],
+    log: true,
+    // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
+    // automatically mining the contract deployment transaction. There is no effect on live networks.
+    autoMine: true,
+  });
+
+  // Get the deployed contract to interact with it after deploying.
+  const yourACMContract = await hre.ethers.getContract<Contract>("RealACMilan", deployer);
+  console.log("Deployed RealACMilan Contract:", await yourACMContract.getAddress());
 };
 
-export default deployYourContract;
+export default deployTokenContracts;
 
 // Tags are useful if you have multiple deploy files and only want to run one of them.
 // e.g. yarn deploy --tags YourContract
-deployYourContract.tags = ["StakingFactory"];
+deployTokenContracts.tags = ["Tokens"];
