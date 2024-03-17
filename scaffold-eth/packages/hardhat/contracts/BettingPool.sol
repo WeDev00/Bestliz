@@ -9,7 +9,10 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./FidelityToken.sol";
 contract BettingPool{
 
-	address owner;
+    struct Better {
+        address wallet;
+        uint256 betChiliz;
+    }
 
     struct Reward{
         uint256 fidelityTokensPerDay;
@@ -24,8 +27,11 @@ contract BettingPool{
 
     mapping(address=>bool) rewardedAddress;
 
-    //Address of the chat to which this BettingPool refers
-    address chatAddress;
+	//Address of the chat to which this BettingPool refers
+	address chatAddress;
+
+	//Variable for creating a bet id
+	uint256 betIds;
 
 	//Address of a Lending platform
 	address lendingPlatformAddress;
@@ -39,20 +45,6 @@ contract BettingPool{
 	//Map for joiners storage
 	mapping(uint256 => Better[]) joiners;
 
-	constructor(
-		address _owner,
-		address _chatAddress,
-		address _lendingPlatformAddress
-	) {
-		owner = _owner;
-		chatAddress = _chatAddress;
-		betIds = 0;
-		lendingPlatformAddress = _lendingPlatformAddress;
-	}
-
-	function getChatAddress() public view returns (address) {
-		return chatAddress;
-	}
 
     constructor(address _owner,address _chatAddress,address _lendingPlatformAddress,address fidelityTokenAddress){
         owner=_owner;
@@ -61,6 +53,14 @@ contract BettingPool{
         lendingPlatformAddress=_lendingPlatformAddress;
         deployedFidelityToken=fidelityTokenAddress;
     }
+
+	function getChatAddress() public view returns (address) {
+		return chatAddress;
+	}
+
+	function getNumberOfPlacedBet() public view returns (uint256) {
+		return betIds;
+	}
 
 	function getDescriptions() public view returns (string[] memory) {
 		string[] memory descriptionsToReturn = new string[](betIds);
@@ -75,17 +75,6 @@ contract BettingPool{
 		return descriptions[betId];
 	}
 
-	function placeABet(string memory description) public payable {
-		betIds += 1;
-		descriptions[betIds] = description;
-		placers[betIds][betIds - 1] = Better(msg.sender, msg.value);
-	}
-
-	function joinABet(uint256 betId) public payable {
-		uint256 numbersOfJoiner = joiners[betId].length;
-		joiners[betId][numbersOfJoiner - 1] = Better(msg.sender, msg.value);
-	}
-
     function placeANewBet(string memory description) payable public {
         betIds+=1;
         descriptions[betIds]=description;
@@ -96,14 +85,12 @@ contract BettingPool{
         placers[existingId][placers[existingId].length-1]=Better(msg.sender,msg.value);
     }
 
-		//TO-DO: implement fidelity token reward
+	function joinABet(uint256 betId) public payable {
+		uint256 numbersOfJoiner = joiners[betId].length;
+		joiners[betId][numbersOfJoiner - 1] = Better(msg.sender, msg.value);
 	}
 
-	function sendNativeTokens(address _to, uint256 _amount) internal {
-		// Sending $CHZ to the specified address
-		(bool success, ) = _to.call{ value: _amount }("");
-		require(success, "Transaction failed");
-	}
+    function onWin(uint256 betId,bool placersWins) public onlyOwner{
 
         //Immediate return of wagered tokens
         if(placersWins){
@@ -129,11 +116,11 @@ contract BettingPool{
         ourToken.mint(msg.sender,rewardedBetter[msg.sender].fidelityTokensPerDay*5);
     }
 
-    function sendNativeTokens(address _to, uint256 _amount) internal{
-  // Sending $CHZ to the specified address
-  (bool success, ) = _to.call{value: _amount}("");
-  require(success, "Transaction failed");
-  }
+	function sendNativeTokens(address _to, uint256 _amount) internal {
+		// Sending $CHZ to the specified address
+		(bool success, ) = _to.call{ value: _amount }("");
+		require(success, "Transaction failed");
+	}
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Error: only the owner can perform this function");
