@@ -1,6 +1,7 @@
 //SPDX-License-Identifier:MIT
 pragma solidity ^0.8.0;
 import "./BettingPool.sol";
+import "./FidelityToken.sol";
 /**
  * @title Factory contract for the creation of BettingPool contracts
  * @author WeDev00
@@ -11,6 +12,7 @@ contract BettingPoolFactory{
 
     address owner;
 
+    address deployedFidelityTokenAddress;
     //stores deployed chats
     address[] deployedContract;
 
@@ -27,8 +29,10 @@ contract BettingPoolFactory{
      * @return bettingPool Address of the new betting pool
      */
     function createBettingPool(address _chatAddress,address _lendingPlatformAddress) external  onlyOwner returns (address){
-        BettingPool bettingPool=new BettingPool(owner,_chatAddress,_lendingPlatformAddress);
+        FidelityToken ourToken=FidelityToken(deployedFidelityTokenAddress);
+        BettingPool bettingPool=new BettingPool(owner,_chatAddress,_lendingPlatformAddress,deployedFidelityTokenAddress);
         deployedContract.push(address(bettingPool));
+        ourToken.addOwner(address(bettingPool));
         emit BettingPoolCreated(_chatAddress,address(bettingPool));
         return address(bettingPool);
     }

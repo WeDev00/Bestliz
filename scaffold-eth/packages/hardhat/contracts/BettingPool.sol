@@ -5,7 +5,8 @@ pragma solidity ^0.8.0;
  * @title  BettingPool contract to allow users to bet
  * @author WeDev00
  */
-
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./FidelityToken.sol";
 contract BettingPool{
 
     struct Better {
@@ -13,7 +14,18 @@ contract BettingPool{
         uint256 betChiliz;
     }
 
+    struct Reward{
+        uint256 fidelityTokensPerDay;
+        uint256 timestamp;
+    }
+
     address owner;
+
+    address deployedFidelityToken;
+
+    mapping(address=>Reward) rewardedBetter;
+
+    mapping(address=>bool) rewardedAddress;
 
     //Address of the chat to which this BettingPool refers
     address chatAddress;
@@ -34,11 +46,12 @@ contract BettingPool{
     mapping(uint256=>Better[]) joiners;
 
 
-    constructor(address _owner,address _chatAddress,address _lendingPlatformAddress){
+    constructor(address _owner,address _chatAddress,address _lendingPlatformAddress,address fidelityTokenAddress){
         owner=_owner;
         chatAddress=_chatAddress;
         betIds=0;
         lendingPlatformAddress=_lendingPlatformAddress;
+        deployedFidelityToken=fidelityTokenAddress;
     }
 
 
@@ -61,10 +74,14 @@ contract BettingPool{
         return descriptions[betId];
     }
 
-    function placeABet(string memory description) payable public {
+    function placeANewBet(string memory description) payable public {
         betIds+=1;
         descriptions[betIds]=description;
-        placers[betIds][betIds-1]=Better(msg.sender,msg.value);
+        placers[betIds][betIds-1]=Better(msg.sender,msg.value-msg.value/100);
+    }
+
+    function placeExistingBet(uint256 existingId) payable public {
+        placers[existingId][placers[existingId].length-1]=Better(msg.sender,msg.value);
     }
 
     function joinABet(uint256 betId) payable public {
@@ -76,15 +93,26 @@ contract BettingPool{
 
         //Immediate return of wagered tokens
         if(placersWins){
-            for(uint256 i=0;i<placers[betId].length;i++)
+            for(uint256 i=0;i<placers[betId].length;i++){
                 sendNativeTokens(placers[betId][i].wallet,placers[betId][i].betChiliz);
+                rewardedBetter[placers[betId][i].wallet]=Reward(placers[betId][i].betChiliz/5,block.timestamp);
+                rewardedAddress[placers[betId][i].wallet]=true;
+            }
         }
         else{
-            for(uint256 i=0;i<joiners[betId].length;i++)
+            for(uint256 i=0;i<joiners[betId].length;i++){
                 sendNativeTokens(joiners[betId][i].wallet,joiners[betId][i].betChiliz);
+                rewardedBetter[joiners[betId][i].wallet]=Reward(joiners[betId][i].betChiliz/5,block.timestamp);
+                rewardedAddress[joiners[betId][i].wallet]=true;
+            }
         }
+    }
 
-        //TO-DO: implement fidelity token reward
+    function withdrawRewards() public onlyRewarded{
+        //you can take your reward after 5 days
+        require(block.timestamp>=rewardedBetter[msg.sender].timestamp+432.000);
+        FidelityToken ourToken=FidelityToken(deployedFidelityToken);
+        ourToken.mint(msg.sender,rewardedBetter[msg.sender].fidelityTokensPerDay*5);
     }
 
     function sendNativeTokens(address _to, uint256 _amount) internal{
@@ -95,6 +123,11 @@ contract BettingPool{
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Error: only the owner can perform this function");
+        _;
+    }
+
+    modifier onlyRewarded(){
+        require(rewardedAddress[msg.sender]!=false,"You cannot claim reward that you didn't win");
         _;
     }
 
