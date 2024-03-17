@@ -2,10 +2,9 @@
 
 import { Button, Card, Image, Input, Tab, Tabs } from "@nextui-org/react";
 import type { NextPage } from "next";
-import { useAccount } from "wagmi";
 
 const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
+  // const { address: connectedAddress } = useAccount();
   const tabs = [
     {
       id: "home",

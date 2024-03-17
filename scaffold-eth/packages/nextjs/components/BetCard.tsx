@@ -1,9 +1,7 @@
-import { useState } from "react";
 import {
   Button,
   Card,
   CardBody,
-  CardFooter,
   CardHeader,
   Divider,
   Input,

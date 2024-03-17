@@ -96,7 +96,7 @@ const deployedContracts = {
       ],
       inheritedFunctions: {},
     },
-    
+
 
   },
 } as const;
