@@ -130,8 +130,12 @@ contract ChatStaking {
         }
 
         // Updates the user's staking status
+        if(haveStaked[msg.sender]==true)
         staked[msg.sender].amount += _amount;
+        else{
+        staked[msg.sender].amount=_amount;
         haveStaked[msg.sender]=true;
+        }
         startTime[msg.sender] = block.timestamp;
 
         emit Staked(msg.sender, _amount);
