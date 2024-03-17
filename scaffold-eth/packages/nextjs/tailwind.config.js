@@ -10,6 +10,7 @@ module.exports = {
   ],
   plugins: [require("@tailwindcss/typography"), require("daisyui"), nextui()],
   darkTheme: "class",
+  darkMode: 'selector',
   // DaisyUI theme colors
   daisyui: {
     themes: ["cyberpunk", "synthwave"],

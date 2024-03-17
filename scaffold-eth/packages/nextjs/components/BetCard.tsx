@@ -53,15 +53,15 @@ const BetCard = () => {
           <h2 className="text-md text-center py-4">Active Bets</h2>
           <div className="flex justify-between">
             <p>Manchester City</p>
-            <p>FC Barcelona</p>
+            <p>AC Milan</p>
           </div>
           <Progress aria-label="Current Bets" radius="none" color="success" value={35} className="w-full" />
           <div className="flex justify-between">
-            <p className="text-warning">500 CHZ</p>
-            <p className="text-warning">500 CHZ</p>
+            <p className="text-warning">350 CHZ</p>
+            <p className="text-warning">650 CHZ</p>
           </div>
           <Divider className="mb-2" />
-          <Table removeWrapper hideHeader aria-label="Example static collection table" td="">
+          <Table removeWrapper hideHeader aria-label="Example static collection table">
             <TableHeader>
               <TableColumn align="center">HOME</TableColumn>
               <TableColumn align="center">CATEGORY</TableColumn>
