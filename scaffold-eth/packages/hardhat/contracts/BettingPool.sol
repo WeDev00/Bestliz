@@ -6,96 +6,105 @@ pragma solidity ^0.8.0;
  * @author WeDev00
  */
 
-contract BettingPool{
+contract BettingPool {
+	struct Better {
+		address wallet;
+		uint256 betChiliz;
+	}
 
-    struct Better {
-        address wallet;
-        uint256 betChiliz;
-    }
+	address owner;
 
-    address owner;
+	//Address of the chat to which this BettingPool refers
+	address chatAddress;
 
-    //Address of the chat to which this BettingPool refers
-    address chatAddress;
+	//Variable for creating a bet id
+	uint256 betIds;
 
-    //Variable for creating a bet id
-    uint256 betIds;
+	//Address of a Lending platform
+	address lendingPlatformAddress;
 
-    //Address of a Lending platform
-    address lendingPlatformAddress;
+	//Map to store a short description of a bet;
+	mapping(uint256 => string) descriptions;
 
-    //Map to store a short description of a bet;
-    mapping(uint256=>string) descriptions;
+	//Map for placers storage
+	mapping(uint256 => Better[]) placers;
 
-    //Map for placers storage
-    mapping(uint256=>Better[]) placers;
+	//Map for joiners storage
+	mapping(uint256 => Better[]) joiners;
 
-    //Map for joiners storage
-    mapping(uint256=>Better[]) joiners;
+	constructor(
+		address _owner,
+		address _chatAddress,
+		address _lendingPlatformAddress
+	) {
+		owner = _owner;
+		chatAddress = _chatAddress;
+		betIds = 0;
+		lendingPlatformAddress = _lendingPlatformAddress;
+	}
 
+	function getChatAddress() public view returns (address) {
+		return chatAddress;
+	}
 
-    constructor(address _owner,address _chatAddress,address _lendingPlatformAddress){
-        owner=_owner;
-        chatAddress=_chatAddress;
-        betIds=0;
-        lendingPlatformAddress=_lendingPlatformAddress;
-    }
+	function getNumberOfPlacedBet() public view returns (uint256) {
+		return betIds;
+	}
 
+	function getDescriptions() public view returns (string[] memory) {
+		string[] memory descriptionsToReturn = new string[](betIds);
+		for (uint256 i = 1; i <= betIds; i++)
+			descriptionsToReturn[i - 1] = descriptions[i];
+		return descriptionsToReturn;
+	}
 
-    function getChatAddress()public view returns(address){
-        return chatAddress;
-    }
- 
-    function getNumberOfPlacedBet() public view returns(uint256){
-        return betIds;
-    }
+	function getDescriptionByBetId(
+		uint256 betId
+	) public view returns (string memory) {
+		return descriptions[betId];
+	}
 
-    function getDescriptions() public view returns (string[] memory){
-        string[] memory descriptionsToReturn=new string[](betIds);
-        for(uint256 i=1;i<=betIds;i++)
-        descriptionsToReturn[i-1]=descriptions[i];
-        return descriptionsToReturn;
-    }
+	function placeABet(string memory description) public payable {
+		betIds += 1;
+		descriptions[betIds] = description;
+		placers[betIds][betIds - 1] = Better(msg.sender, msg.value);
+	}
 
-    function getDescriptionByBetId(uint256 betId) public view returns(string memory ){
-        return descriptions[betId];
-    }
+	function joinABet(uint256 betId) public payable {
+		uint256 numbersOfJoiner = joiners[betId].length;
+		joiners[betId][numbersOfJoiner - 1] = Better(msg.sender, msg.value);
+	}
 
-    function placeABet(string memory description) payable public {
-        betIds+=1;
-        descriptions[betIds]=description;
-        placers[betIds][betIds-1]=Better(msg.sender,msg.value);
-    }
+	function onWin(uint256 betId, bool placersWins) public onlyOwner {
+		//Immediate return of wagered tokens
+		if (placersWins) {
+			for (uint256 i = 0; i < placers[betId].length; i++)
+				sendNativeTokens(
+					placers[betId][i].wallet,
+					placers[betId][i].betChiliz
+				);
+		} else {
+			for (uint256 i = 0; i < joiners[betId].length; i++)
+				sendNativeTokens(
+					joiners[betId][i].wallet,
+					joiners[betId][i].betChiliz
+				);
+		}
 
-    function joinABet(uint256 betId) payable public {
-        uint256 numbersOfJoiner=joiners[betId].length;
-        joiners[betId][numbersOfJoiner-1]=Better(msg.sender,msg.value);
-    }
+		//TO-DO: implement fidelity token reward
+	}
 
-    function onWin(uint256 betId,bool placersWins) public onlyOwner{
+	function sendNativeTokens(address _to, uint256 _amount) internal {
+		// Sending $CHZ to the specified address
+		(bool success, ) = _to.call{ value: _amount }("");
+		require(success, "Transaction failed");
+	}
 
-        //Immediate return of wagered tokens
-        if(placersWins){
-            for(uint256 i=0;i<placers[betId].length;i++)
-                sendNativeTokens(placers[betId][i].wallet,placers[betId][i].betChiliz);
-        }
-        else{
-            for(uint256 i=0;i<joiners[betId].length;i++)
-                sendNativeTokens(joiners[betId][i].wallet,joiners[betId][i].betChiliz);
-        }
-
-        //TO-DO: implement fidelity token reward
-    }
-
-    function sendNativeTokens(address _to, uint256 _amount) internal{
-  // Sending $CHZ to the specified address
-  (bool success, ) = _to.call{value: _amount}("");
-  require(success, "Transaction failed");
-  }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Error: only the owner can perform this function");
-        _;
-    }
-
+	modifier onlyOwner() {
+		require(
+			msg.sender == owner,
+			"Error: only the owner can perform this function"
+		);
+		_;
+	}
 }
