@@ -30,3 +30,11 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+.chat {
+  grid-template-columns: none !important;
+}
+
+.chat-end .chat-bubble {
+  background: blue;
+}
